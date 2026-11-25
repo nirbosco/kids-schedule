@@ -211,7 +211,10 @@ function buildModel({ cells, merges }) {
       const phs = seg.match(PHONE_RE); if (!phs) continue;
       for (const ph of phs) {
         const digits = ph.replace(/\D/g, ""); if (seenPh.has(digits)) continue; seenPh.add(digits);
-        let label = seg.replace(PHONE_RE, " ").replace(/טלפון/g, " ").replace(/[:\-–.,]+/g, " ").replace(/\s+/g, " ").trim();
+        const clean = (x) => x.replace(/[:.,]+/g, " ").replace(/\s+/g, " ").trim();
+        const parts = seg.slice(0, seg.indexOf(ph)).split(/\s[-–]\s|,|טלפון/).map(clean).filter(Boolean);
+        const name = parts.pop() || "";
+        let label = parts.length && parts[0] !== name ? `${name} (${parts[0]})` : name;
         contacts.push({ label: label || "טלפון", phone: digits.length === 10 ? `${digits.slice(0, 3)}-${digits.slice(3)}` : ph });
       }
     }
