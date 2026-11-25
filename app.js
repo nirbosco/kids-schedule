@@ -153,7 +153,7 @@ function buildModel({ cells, merges }) {
     if (r !== 0 || c === 0) continue;
     const dm = text.match(/(\d{1,2})[./](\d{1,2})/); if (!dm) continue;
     const m = mergeAt(r, c);
-    days.push({ date: `${year}-${pad(+dm[2])}-${pad(+dm[1])}`, title: text, c1: m.c1, c2: m.c2, items: [] });
+    days.push({ date: `${year}-${pad(+dm[2])}-${pad(+dm[1])}`, title: text, who: text.replace(/^.*?\d{1,2}[./]\d{1,2}(?:[./]\d{2,4})?/, "").replace(/^[\s\-–:,|]+/, "").trim(), c1: m.c1, c2: m.c2, items: [] });
   }
   days.sort((a, b) => a.c1 - b.c1);
   // ילדים לפי עמודה
@@ -275,6 +275,8 @@ function render() {
   if (!S.dayChosen) S.dayIndex = todayIndex();
   const day = S.model.days[S.dayIndex];
   $("top-sub").textContent = `יום ${dayName(day.date)} ${dayDM(day.date)}${n.fake ? " · תצוגת בדיקה" : ""}`;
+  $("who-bar").hidden = !day.who;
+  $("who-bar").innerHTML = day.who ? `<span class="who-ic" aria-hidden="true">🧡</span><span><small>מי עם הילדים ביום ${dayName(day.date)}</small>${esc(day.who)}</span>` : "";
   $("clocks").innerHTML = `<div class="il">${hhmm(n.minutes)}</div><div class="ld">לונדון ${londonLabel(n)}</div>`;
   renderTicker();
   renderDays(n);
